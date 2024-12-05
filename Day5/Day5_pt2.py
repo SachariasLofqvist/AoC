@@ -26,15 +26,15 @@ for instruction in instructions:
 
     instruction = list(map(int, instruction.split(",")))
 
-    for i, item in enumerate(instruction[:-1]):
-        for num in instruction[int(i + 1):]:
+    for i, keys in enumerate(instruction[:-1]):
+        for values in instruction[int(i + 1):]:
             
-            if dict_rules.get(item) == None and i == len(instruction) - 1: continue
-            elif dict_rules.get(item) == None:
+            if dict_rules.get(keys) == None and i == len(instruction) - 1: continue
+            elif dict_rules.get(keys) == None:
                 wrong_lists.append(instruction)
                 break
 
-            if num in dict_rules.get(item):
+            if values in dict_rules.get(keys):
                 safe = True
             else:
                 wrong_lists.append(instruction)
@@ -44,22 +44,21 @@ for instruction in instructions:
         break
 
 matches = 0
-total = 0
 
 for wrong_list in wrong_lists:
     matches = 0
     index_temp_list = len(wrong_list) - 1
     temp_list = list(wrong_list)
 
-    for i, number in enumerate(wrong_list):
-        for num in wrong_list[:int(i)] + wrong_list[int(i+1):]:
-            if dict_rules.get(number) == None:
-                temp_list[index_temp_list] = number
+    for i, keys in enumerate(wrong_list):
+        for values in wrong_list[:int(i)] + wrong_list[int(i+1):]:
+            if dict_rules.get(keys) == None:
+                temp_list[index_temp_list] = keys
                 continue
-            if num in dict_rules.get(number):
+            if values in dict_rules.get(keys):
                 matches += 1
         else:
-            temp_list[index_temp_list-matches] = number
+            temp_list[index_temp_list-matches] = keys
             matches = 0
             continue
         break
