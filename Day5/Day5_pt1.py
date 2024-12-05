@@ -25,15 +25,15 @@ for instruction in instructions:
 
     instruction = list(map(int, instruction.split(",")))
 
-    for i, item in enumerate(instruction[:-1]):
-        for num in instruction[int(i + 1):]:
+    for i, keys in enumerate(instruction[:-1]):
+        for values in instruction[int(i + 1):]:
             
-            if dict_rules.get(item) == None and i == len(instruction) - 1: continue
-            elif dict_rules.get(item) == None:
+            if dict_rules.get(keys) == None and i == len(instruction) - 1: continue
+            elif dict_rules.get(keys) == None:
                 safe = False
                 break
 
-            if num in dict_rules.get(item):
+            if values in dict_rules.get(keys):
                 safe = True
             else:
                 safe = False
