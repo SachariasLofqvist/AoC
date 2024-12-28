@@ -1,41 +1,59 @@
-from collections import deque
+file = open("2024\\Day24\\input.txt")
 
-index = 0
-init_dict = {}
+for line in file:
+    if line.isspace(): break
 
-start_dict, instructions = open("Day24\\input.txt").read().strip().split("\n\n")
+formulas = {}
 
-for line in start_dict.split("\n"):
-    key, value = line.split(": ")
-    init_dict[key] = int(value)
+for line in file:
+    x, op, y, z = line.replace(" ->", " ").split()
+    formulas[z] = (op, x, y)
 
-def findRight(key1, key2, operator, binary_number_x, binary_number_y):
-    value = None
+def make_wire(char, num):
+    return char + str(num).rjust(2, "0")
 
-    if operator == "AND":
-        if init_dict[key1] == init_dict[key2] == 1:
-            value = 1
-        else:
-            value = 0       
-    elif operator == "OR":
-        if init_dict[key1] == init_dict[key2] == 0:
-            value = 0
-        else:
-            value = 1
-    elif operator == "XOR":
-        if init_dict[key1]  != init_dict[key2]:
-            value = 1
-        else:
-            value = 0 
+def verify_z(wire, num):
+    print("vz", wire, num)
+    op, x, y = formulas[wire]
+    if op != "XOR": return False
+    if num == 0: return sorted([x, y]) == ["x00", "y00"]
+    return ver_int_xor(x, num) and ver_car_bit(y, num) or ver_int_xor(y, num) and ver_car_bit(x, num)
 
-    return value
+def ver_int_xor(wire, num):
+    print("vx", wire, num)
+    op, x, y = formulas[wire]
+    if op != "XOR": return False
+    return sorted([x, y]) == [make_wire("x", num), make_wire("y", num)]
 
-binary_number_x = deque()
-binary_number_y = deque()
+def ver_car_bit(wire, num):
+    print("vc", wire, num)
+    op, x, y = formulas[wire]
+    if num == 1:
+        if op != "AND": return False
+        return sorted([x, y]) == ["x00", "y00"]
+    if op != "OR": return False
+    return ver_dir_car(x, num - 1) and ver_recar(y, num - 1) or ver_dir_car(y, num - 1) or ver_recar(x, num - 1)
 
-for key in sorted(init_dict):
-    if key.startswith("x"):
-        binary_number_x.appendleft(str(init_dict[key]))
-    else:
-        binary_number_y.appendleft(str(init_dict[key]))
+def ver_dir_car(wire, num):
+    print("vd", wire, num)
+    op, x, y = formulas[wire]
+    if op != "AND": return False
+    return sorted([x, y]) == [make_wire("x", num), make_wire("y", num)]
 
+def ver_recar(wire, num):
+    print("vr", wire, num)
+    op, x, y = formulas[wire]
+    if op != "AND": return False
+    return ver_int_xor(x, num) and ver_car_bit(y, num) or ver_int_xor(y, num) and ver_car_bit(x, num)
+
+def verify(num):
+    return verify_z(make_wire("z", num), num)
+
+i = 0
+
+while True:
+    if not verify(i): break
+    i += 1
+
+
+print("failed on", make_wire("z", i))
