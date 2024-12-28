@@ -1,4 +1,4 @@
-lines = [line for line in open("Day23\\input.txt").read().strip().split("\n")]
+lines = [line for line in open("2024\\Day23\\input.txt").read().strip().split("\n")]
 connections = {}
 
 for line in lines:
@@ -12,5 +12,16 @@ for line in lines:
 sets = set()
 
 def serch(node, req):
-    pass
+    key = tuple(sorted(req))
+    if key in sets: return
+    sets.add(key)
 
+    for neighbor in connections[node]:
+        if neighbor in req: continue
+        if not all(neighbor in connections[query] for query in req): continue
+        serch(neighbor, {*req, neighbor})
+
+for x in connections:
+    serch(x, {x})
+
+print(",".join(sorted(max(sets, key=len))))
